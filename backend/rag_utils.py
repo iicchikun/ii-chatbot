@@ -7,7 +7,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores.utils import maximal_marginal_relevance
 from pdf2image import convert_from_path
+
+from config import settings
 
 # Initialize embeddings
 model_name = "all-MiniLM-L6-v2"
@@ -15,8 +18,8 @@ embeddings = HuggingFaceEmbeddings(model_name=model_name)
 
 # Initialize text splitter
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200,
+    chunk_size=settings.RAG_CHUNK_SIZE,
+    chunk_overlap=settings.RAG_CHUNK_OVERLAP,
     length_function=len,
 )
 
@@ -98,13 +101,35 @@ class RAGManager:
                 print(f"Error reading text file directly: {e2}")
                 return ["Error extracting text from file."]
     
-    def get_relevant_context(self, query: str, top_k: int = 5) -> Optional[str]:
+    def get_relevant_context(self, query: str, top_k: int = 5, use_mmr: bool = True, fetch_k: int = 15, lambda_mult: float = 0.7) -> Optional[str]:
         """Get relevant context from the vector store based on query"""
         if not self.vector_db:
             return None
         
-        # Search the vector DB
-        docs = self.vector_db.similarity_search(query, k=top_k)
+        if use_mmr:
+            # Get embeddings for the query
+            query_embedding = embeddings.embed_query(query)
+            
+            # Fetch initial documents
+            initial_docs = self.vector_db.similarity_search(query, k=fetch_k)
+            initial_doc_texts = [doc.page_content for doc in initial_docs]
+            
+            # Get document embeddings
+            doc_embeddings = [embeddings.embed_query(text) for text in initial_doc_texts]
+            
+            # Apply MMR
+            mmr_indices = maximal_marginal_relevance(
+                query_embedding, 
+                doc_embeddings, 
+                k=top_k, 
+                lambda_mult=lambda_mult
+            )
+            
+            # Get the filtered documents
+            docs = [initial_docs[i] for i in mmr_indices]
+        else:
+            # Use standard similarity search
+            docs = self.vector_db.similarity_search(query, k=top_k)
         
         # Combine the relevant content
         if docs:

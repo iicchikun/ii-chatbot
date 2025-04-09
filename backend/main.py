@@ -21,7 +21,8 @@ class ChatWithContextRequest(BaseModel):
 
 version = "v1"
 app = FastAPI(version=version,
-              title='REST API with Ollama and Deepseek')
+              title='II-Chatbot API',
+              description='API for II-Chatbot that utilize FastAPI and Ollama')
 
 from fastapi.middleware.cors import CORSMiddleware
 

@@ -683,13 +683,13 @@ function PureSuggestedActions({ chatId, appendAndTrigger }: SuggestedActionsProp
     },
     {
       title: "Help me write an essay",
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      label: `about dragons, knights and magic`,
+      action: `Help me write an essay about dragons, knights and magic`,
     },
     {
-      title: "What is the weather",
-      label: "in San Francisco?",
-      action: "What is the weather in San Francisco?",
+      title: "What is the weakness",
+      label: "of the Evil Dragon?",
+      action: "What is the weakness of the Evil Dragon?",
     },
   ];
 

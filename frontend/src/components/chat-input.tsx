@@ -102,7 +102,7 @@ export function ChatInput({
         "mx-auto w-full",
         messages !== undefined && messages.length > 0
           ? "fixed bottom-0 left-0 right-0 bg-background"
-          : "fixed bottom-8 left-0 right-0 top-6 flex flex-col items-center justify-center"
+          : "fixed bottom-6 left-0 right-0 top-6 flex flex-col items-center justify-center"
       )}
     >
       <form

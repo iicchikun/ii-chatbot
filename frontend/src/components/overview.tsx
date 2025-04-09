@@ -14,7 +14,7 @@ export const Overview = () => {
     >
       <div className="rounded-xl p-6 flex flex-col gap-4 leading-relaxed text-center max-w-xl">
         <p className="flex flex-row justify-center gap-4 items-center">
-          <AILogo width={48} height={48} />
+          <AILogo width={150} height={150} />
           {/* <span>+</span>
                     <MessageIcon size={48} /> */}
         </p>
