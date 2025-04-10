@@ -72,10 +72,11 @@ class OllamaService:
                 # Process the file and create vector DB
                 self.process_file(file_bytes, file_name)
                 
-                # Get relevant context for the query using MMR if enabled
+                # Get relevant context for the query using MMR and reranking if enabled
                 file_context = self.rag_manager.get_relevant_context(
                     query=query,
                     use_mmr=settings.MMR_ENABLED,
+                    use_reranking=settings.RERANKING_ENABLED,
                     top_k=settings.MMR_TOP_K,
                     fetch_k=settings.MMR_FETCH_K,
                     lambda_mult=settings.MMR_LAMBDA_MULT

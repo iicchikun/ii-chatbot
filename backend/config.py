@@ -16,9 +16,13 @@ class Settings(BaseSettings):
     
     # MMR settings
     MMR_ENABLED: bool = True  # Enable/disable MMR retrieval
-    MMR_FETCH_K: int = 15     # Number of documents to consider before filtering
+    MMR_FETCH_K: int = 30     # Number of documents to consider before filtering
     MMR_TOP_K: int = 5        # Number of documents to return after MMR filtering
     MMR_LAMBDA_MULT: float = 0.7  # Diversity-relevance tradeoff (0-1). Higher values prioritize relevance
+    
+    # Reranking settings
+    RERANKING_ENABLED: bool = True  # Enable/disable reranking
+    RERANKING_MODEL: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"  # Model to use for reranking
 
     # class Config:
     #     env_file = ".env"
