@@ -1,13 +1,10 @@
-import os
 from typing import Optional
-
 from fastapi import FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 from starlette.responses import StreamingResponse
 
 from ollama_service import OllamaService
 from config import settings
-
 
 class ChatRequest(BaseModel):
     query: str

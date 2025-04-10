@@ -1,10 +1,14 @@
-from pydantic_settings import BaseSettings
+import os
 
+from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Settings(BaseSettings):
     # Ollama settings
-    OLLAMA_HOST: str = 'http://127.0.0.1'
-    OLLAMA_PORT: int = 11434
+    OLLAMA_HOST: str = os.getenv('OLLAMA_HOST_URL', 'http://127.0.0.1')
+    OLLAMA_PORT: int = os.getenv('OLLAMA_PORT', 11434)
     OLLAMA_MODEL: str = 'deepseek-r1:latest'
     
     # Available models for the dropdown selector
@@ -23,9 +27,11 @@ class Settings(BaseSettings):
     # Reranking settings
     RERANKING_ENABLED: bool = True  # Enable/disable reranking
     RERANKING_MODEL: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"  # Model to use for reranking
-
-    # class Config:
-    #     env_file = ".env"
+    
+    # ChromaDB settings
+    CHROMA_PERSIST_DIRECTORY: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "db/chroma")
+    CHROMA_COLLECTION_NAME: str = "ii-chatbot-collection"
+    CHROMA_DISTANCE_FUNCTION: str = "cosine"
 
 
 # Load settings

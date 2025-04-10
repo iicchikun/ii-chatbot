@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
 import CodeDisplayBlock from "@/components/code-display-block";
-import { marked } from "marked";
+import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Message, SearchSource } from "@/lib/types";
-import { AILogo, UserIcon } from "./ui/icons";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { CheckIcon, CopyIcon, ExternalLinkIcon, GlobeIcon, PaperclipIcon, SearchIcon } from "lucide-react";
+import { marked } from "marked";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckIcon, CopyIcon, ExternalLinkIcon, GlobeIcon, PaperclipIcon, SearchIcon } from "lucide-react";
 import { Card } from "./ui/card";
+import { AILogo, UserIcon } from "./ui/icons";
 
 interface ChatMessageProps {
   messages: Message[] | undefined;
@@ -51,7 +51,7 @@ export default function ChatMessage({ messages, isLoading }: ChatMessageProps) {
     <div
       id="scroller"
       className="w-full overflow-y-scroll overflow-x-hidden h-full justify-end"
-      style={{ height: "calc(100vh - 200px)" }} // Adjust height as needed
+      style={{ height: "calc(100vh - 200px)" }}
     >
       <div className="w-full flex flex-col overflow-x-hidden overflow-y-hidden min-h-full justify-end">
         {messages.map((message, index) => (
@@ -171,7 +171,6 @@ export default function ChatMessage({ messages, isLoading }: ChatMessageProps) {
                     {message.content.split("```").map((part, index) => {
                       if (index % 2 === 0) {
                         return (
-                          // <React.Fragment key={index}>{part}</React.Fragment>
                           <span
                             key={index}
                             dangerouslySetInnerHTML={{

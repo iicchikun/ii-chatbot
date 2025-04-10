@@ -46,12 +46,11 @@ export function ChatInput({
 }: ChatInputProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isComposing, setIsComposing] = useState(false); // Composition state
-  const [enterDisabled, setEnterDisabled] = useState(false); // Disable Enter after composition ends
+  const [isComposing, setIsComposing] = useState(false);
+  const [enterDisabled, setEnterDisabled] = useState(false);
   // Static list of available models
   const [availableModels] = useState<string[]>(['deepseek-r1:latest', 'gemma3:latest']);
-  
-  // Use the model provided by props, or the default if not provided
+
   const model = selectedModel || "deepseek-r1:latest";
   const handleModelChange = (newModel: string) => {
     console.log('Model changed to:', newModel);
@@ -68,12 +67,9 @@ export function ChatInput({
     }, 300);
   };
   
-  // Function to stop the streaming response
   const handleStop = () => {
     abortStream();
   };
-  
-  // No need to fetch models - using static data instead
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {

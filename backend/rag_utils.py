@@ -1,17 +1,16 @@
 import os
 import tempfile
-from typing import List, Optional, Tuple
-
 import numpy as np
 import pytesseract
+
+from typing import List, Optional
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
 from langchain_community.vectorstores.utils import maximal_marginal_relevance
 from pdf2image import convert_from_path
 from sentence_transformers import CrossEncoder
-
 from config import settings
 
 # Initialize embeddings
@@ -29,8 +28,12 @@ class RAGManager:
     def __init__(self):
         self.temp_dir = tempfile.mkdtemp()
         self.vector_db = None
+        
         # Initialize cross-encoder for reranking
-        self.reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+        self.reranker = CrossEncoder(settings.RERANKING_MODEL)
+        
+        # Ensure ChromaDB persistence directory exists
+        os.makedirs(settings.CHROMA_PERSIST_DIRECTORY, exist_ok=True)
         
     def process_file(self, file_bytes: bytes, file_name: str) -> List[str]:
         """Process a file and return a list of chunks"""
@@ -48,9 +51,29 @@ class RAGManager:
         else:
             raise ValueError(f"Unsupported file type: {file_name}")
         
-        # Create vector store
+        # Create vector store with metadata
         docs = text_splitter.create_documents(chunks)
-        self.vector_db = FAISS.from_documents(docs, embeddings)
+        
+        # Add metadata to each document
+        for i, doc in enumerate(docs):
+            if not hasattr(doc, 'metadata') or not doc.metadata:
+                doc.metadata = {}
+            doc.metadata.update({
+                'source': file_name,
+                'chunk_id': str(i),
+                'chunk_type': 'text' if file_name.lower().endswith('.txt') else 'pdf'
+            })
+            
+        # Create or update ChromaDB vector store with persistence
+        self.vector_db = Chroma.from_documents(
+            documents=docs,
+            embedding=embeddings,
+            collection_name=settings.CHROMA_COLLECTION_NAME,
+            persist_directory=settings.CHROMA_PERSIST_DIRECTORY
+        )
+        
+        # Persist to disk
+        self.vector_db.persist()
         
         return chunks
     
@@ -121,7 +144,11 @@ class RAGManager:
             return None
         
         # Fetch initial candidates (larger set for reranking)
-        initial_docs = self.vector_db.similarity_search(query, k=fetch_k)
+        initial_docs = self.vector_db.similarity_search(
+            query, 
+            k=fetch_k,
+            search_type=settings.CHROMA_DISTANCE_FUNCTION
+        )
         
         # Apply reranking if enabled
         if use_reranking:

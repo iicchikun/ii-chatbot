@@ -9,7 +9,6 @@ import useSWR from "swr";
 import ChatMessage from "./chat-message";
 
 export function Chat({ id }: { id: string }) {
-  // Input state and handlers.
   const initialInput = "";
   const [inputContent, setInputContent] = useState<string>(initialInput);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -17,12 +16,10 @@ export function Chat({ id }: { id: string }) {
   const [searchInternet, setSearchInternet] = useState<boolean>(false);
   const [selectedModel, setSelectedModel] = useState<string>("deepseek-r1:latest");
 
-  // Store the chat state in SWR, using the chatId as the key to share states.
   const { data: messages, mutate } = useSWR<Message[]>([id, "messages"], null, {
     fallbackData: [],
   });
 
-  // Keep the latest messages in a ref.
   const messagesRef = useRef<Message[]>(messages || []);
   useEffect(() => {
     messagesRef.current = messages || [];
@@ -81,7 +78,6 @@ export function Chat({ id }: { id: string }) {
     [setIsLoading, append]
   );
 
-  // handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputContent(e.target.value);
   };
@@ -114,7 +110,6 @@ export function Chat({ id }: { id: string }) {
 
       setInputContent("");
 
-      // Reset the file after sending if any
       if (selectedFile) {
         setSelectedFile(null);
       }
@@ -131,7 +126,6 @@ export function Chat({ id }: { id: string }) {
     [inputContent, setInputContent, setIsLoading, append, searchInternet, selectedFile, setSelectedFile, selectedModel]
   );
 
-  // handle form submission functionality
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     handleSubmit(e);
   };
