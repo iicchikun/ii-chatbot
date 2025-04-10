@@ -2,6 +2,7 @@ import os
 import tempfile
 from typing import List, Optional
 
+import numpy as np
 import pytesseract
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
@@ -108,14 +109,14 @@ class RAGManager:
         
         if use_mmr:
             # Get embeddings for the query
-            query_embedding = embeddings.embed_query(query)
+            query_embedding = np.array(embeddings.embed_query(query))
             
             # Fetch initial documents
             initial_docs = self.vector_db.similarity_search(query, k=fetch_k)
             initial_doc_texts = [doc.page_content for doc in initial_docs]
             
             # Get document embeddings
-            doc_embeddings = [embeddings.embed_query(text) for text in initial_doc_texts]
+            doc_embeddings = [np.array(embeddings.embed_query(text)) for text in initial_doc_texts]
             
             # Apply MMR
             mmr_indices = maximal_marginal_relevance(
